@@ -2,7 +2,7 @@
 Code for an arduino based watering array controller
 
 ### Installation
-Move folder to Arduino IDE projects folder.\
+Move downloaded folder to Arduino IDE projects folder.\
 #### With Github:
 Install Adafruit Unified Sensor. `https://github.com/adafruit/DHT-sensor-library`\
 in IDE: goto "Sketch/Include Library/add .zip library".\

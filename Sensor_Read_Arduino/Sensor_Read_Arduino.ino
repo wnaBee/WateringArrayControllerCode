@@ -9,7 +9,7 @@ float reqtemp = 0;
 float reqShum = 0;
 float ActiveTime = 0;
 float InActiveTime = 0;
-String locale[] = {"meny","temperature","Soil humidity","Air humidity","Active time","Inactive time"};
+String locale[] = {"menu","temperature","Soil humidity","Air humidity","Active time","Inactive time","data"};
 int clocale = 0;
 int Mpos = 0;
 
@@ -59,7 +59,7 @@ void setup() {
   Serial.print("\n");
 }
 
-int menu(){
+int menu(float hum, float temp, float Shum){
     //down
     if(digitalRead(4) == HIGH){
       //Serial.print(digitalRead(4));
@@ -95,6 +95,9 @@ int menu(){
           InActiveTime -= 1000;
           Serial.print(InActiveTime/1000);
           break;
+        case 6:
+          clocale = 0;
+        break;
         }
         Serial.print("\n");
         delay(1000);
@@ -106,6 +109,7 @@ int menu(){
       switch(clocale){
         case 0:
           //menu
+          printData(temp, hum, Shum);
           clocale = Mpos;
           break;
         case 1:
@@ -168,6 +172,9 @@ int menu(){
           InActiveTime += 1000;
           Serial.print(InActiveTime/1000);
           break;
+        case 6:
+          clocale = 0;
+        break;
         }
         Serial.print("\n");
         delay(1000);
@@ -175,39 +182,39 @@ int menu(){
     return 0;
   }
 
+void printData(float hum, float temp, float Shum){
+      Serial.print("Air Humidity: ");
+      Serial.print(hum);
+  
+      Serial.print("%  |  Soil Humidity: ");
+      Serial.print(Shum); 
+  
+      Serial.print("%  |  Temperature: ");
+      Serial.print(temp);
+      Serial.print("°C\n");
+  }
+
 void loop() {
   //main body
-    menu();
     float hum = dht.readHumidity();
     float Shum = dht.readHumidity();
     float temp = dht.readTemperature();
-    
+    menu(hum, temp, Shum);
     
     //verify integrity
     if (isnan(hum) || isnan(temp)) {
       Serial.println("Failed to read from DHT sensor");
     } else {
     
-      //print situation
-/*
-      Serial.print("Humidity: ");
-      Serial.print(hum);
-      Serial.print("%");
-  
-      Serial.print("  |  "); 
-  
-      Serial.print("Temperature: ");
-      Serial.print(temp);
-      Serial.print("°C\n");
-*/
+
       //water
       if(temp > reqtemp || hum < reqAhum || Shum < reqShum){
         Serial.print("watering\n");
         float initTime = millis();
-        while(millis()-initTime < ActiveTime){menu();}
+        while(millis()-initTime < ActiveTime){menu(hum, temp, Shum);}
         Serial.print("done\n");
         initTime = millis();
-        while(millis()-initTime < InActiveTime){menu();}
+        while(millis()-initTime < InActiveTime){menu(hum, temp, Shum);}
       }
    }
 }

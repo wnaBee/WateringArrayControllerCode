@@ -16,6 +16,7 @@ int Mpos = 0;
 void setup() {
   Serial.begin(9600);
   dht.begin();
+  pinMode(3, OUTPUT);
   Serial.print("Input in order, deliniate with \\n: top Air humidity, top Soil humidity, minimum temperature \nactive time, inactive time \n");
   while( reqAhum == 0 || reqShum == 0 || reqtemp == 0 || ActiveTime == 0 || InActiveTime == 0){
     if(reqAhum == 0){
@@ -60,8 +61,10 @@ void setup() {
 }
 
 int menu(float hum, float temp, float Shum){
+    char readbtn = Serial.read();
+
     //down
-    if(digitalRead(4) == HIGH){
+    if(readbtn == 'i'){
       //Serial.print(digitalRead(4));
       switch(clocale){
         case 0:
@@ -103,7 +106,7 @@ int menu(float hum, float temp, float Shum){
         delay(1000);
     }
     //confirm
-    if(digitalRead(5) == HIGH){
+    if(readbtn == 'o'){
       Serial.print("entered\n");
       //Serial.print(digitalRead(5));
       switch(clocale){
@@ -138,7 +141,7 @@ int menu(float hum, float temp, float Shum){
         delay(1000);
       }
     //up
-    if(digitalRead(6) == HIGH){
+    if(readbtn == 'k'){
       //Serial.print(digitalRead(6));
       switch(clocale){
         case 0:
@@ -211,8 +214,10 @@ void loop() {
       if(temp > reqtemp || hum < reqAhum || Shum < reqShum){
         Serial.print("watering\n");
         float initTime = millis();
+        digitalWrite(3, HIGH);
         while(millis()-initTime < ActiveTime){menu(hum, temp, Shum);}
         Serial.print("done\n");
+        digitalWrite(3, LOW);
         initTime = millis();
         while(millis()-initTime < InActiveTime){menu(hum, temp, Shum);}
       }

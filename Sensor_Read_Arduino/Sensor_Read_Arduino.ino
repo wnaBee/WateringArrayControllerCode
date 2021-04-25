@@ -1,9 +1,12 @@
 #include <DHT.h>
 #include <DHT_U.h>
-#define DHTPIN 2
+#define ADHTPIN 2
+#define SDHTPIN 8
 #define DHTTYPE DHT22
 
-DHT dht(DHTPIN, DHTTYPE);
+
+DHT dht(ADHTPIN, DHTTYPE);
+DHT sdht(SDHTPIN, DHTTYPE);
 float reqAhum = 0;
 float reqtemp = 0;
 float reqShum = 0;
@@ -16,6 +19,7 @@ int Mpos = 0;
 void setup() {
   Serial.begin(9600);
   dht.begin();
+  sdht.begin();
   pinMode(3, OUTPUT);
   Serial.print("Input in order, deliniate with \\n: top Air humidity, top Soil humidity, minimum temperature \nactive time, inactive time \n");
   while( reqAhum == 0 || reqShum == 0 || reqtemp == 0 || ActiveTime == 0 || InActiveTime == 0){
@@ -200,7 +204,7 @@ void printData(float hum, float temp, float Shum){
 void loop() {
   //main body
     float hum = dht.readHumidity();
-    float Shum = dht.readHumidity();
+    int Shum = analogRead(A0)/10;
     float temp = dht.readTemperature();
     menu(hum, temp, Shum);
     

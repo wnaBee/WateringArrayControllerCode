@@ -68,7 +68,7 @@ int menu(float hum, float temp, float Shum){
     char readbtn = Serial.read();
 
     //down
-    if(readbtn == 'i'){
+    if(readbtn == 'k'){
       //Serial.print(digitalRead(4));
       switch(clocale){
         case 0:
@@ -145,7 +145,7 @@ int menu(float hum, float temp, float Shum){
         delay(1000);
       }
     //up
-    if(readbtn == 'k'){
+    if(readbtn == 'i'){
       //Serial.print(digitalRead(6));
       switch(clocale){
         case 0:
@@ -192,12 +192,18 @@ int menu(float hum, float temp, float Shum){
 void printData(float hum, float temp, float Shum){
       Serial.print("Air Humidity: ");
       Serial.print(hum);
+      Serial.print("% / ");
+      Serial.print(reqAhum);
   
       Serial.print("%  |  Soil Humidity: ");
-      Serial.print(Shum); 
+      Serial.print(Shum);
+      Serial.print("% / ");
+      Serial.print(reqShum); 
   
       Serial.print("%  |  Temperature: ");
       Serial.print(temp);
+      Serial.print("°C / ");
+      Serial.print(reqtemp);
       Serial.print("°C\n");
   }
 
@@ -209,13 +215,27 @@ void loop() {
     menu(hum, temp, Shum);
     
     //verify integrity
-    if (isnan(hum) || isnan(temp)) {
+    if (isnan(hum) || isnan(temp) || isnan(Shum)) {
       Serial.println("Failed to read from DHT sensor");
     } else {
     
 
       //water
       if(temp > reqtemp || hum < reqAhum || Shum < reqShum){
+        Serial.print(temp);
+        Serial.print(" / ");
+        Serial.print(reqtemp);
+        Serial.print(" | ");
+        Serial.print(hum);
+        Serial.print(" / ");
+        Serial.print(reqAhum);
+        Serial.print(" | ");
+        Serial.print(Shum);
+        Serial.print(" / ");
+        Serial.print(reqShum);
+        
+        Serial.print("\n");
+        
         Serial.print("watering\n");
         float initTime = millis();
         digitalWrite(3, HIGH);
